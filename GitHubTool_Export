@@ -1,0 +1,41 @@
+Attribute VB_Name = "GitHubTool_Export"
+
+Sub ExportAllToFolderForGitHub()
+
+    Dim vbComp As Object
+    Dim folderPath As String
+    Dim file As Object
+    Dim folderDialog As FileDialog
+    Dim fso As Object
+
+    'folder selection
+    Set folderDialog = Application.FileDialog(msoFileDialogFolderPicker)
+    With folderDialog
+        .Title = "Select Folder to Export Files to"
+        If .Show = -1 Then
+            folderPath = .SelectedItems(1) + "\" ' Get selected folder
+        Else
+            MsgBox "No folder selected.", vbExclamation
+            Exit Sub
+        End If
+    End With
+    
+    Set fso = CreateObject("Scripting.FileSystemObject")
+    If Not fso.FolderExists(folderPath) Then
+        MsgBox "The selected folder does not exist.", vbExclamation
+        Exit Sub
+    End If
+    
+    'export files
+    For Each vbComp In ThisWorkbook.vbProject.VBComponents
+        If Not vbComp.Name = "Sheet1" Then
+            vbComp.Export folderPath & vbComp.Name
+        End If
+    Next vbComp
+    
+    MsgBox "VBA files exported!"
+    
+End Sub
+
+
+
